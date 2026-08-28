@@ -1,22 +1,24 @@
 services:
   web:
-    build: ./docker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     command: php -S 0.0.0.0:8080 -t public public/index.php
     expose:
       - "8080"
     env_file: .env
     volumes:
-      - ./:/app
       - storage:/app/storage
     restart: unless-stopped
 
   worker:
-    build: ./docker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     command: php bin/worker.php
     user: appuser
     env_file: .env
     volumes:
-      - ./:/app
       - storage:/app/storage
       - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}:/home/appuser/.claude
       - ${CLAUDE_CREDENTIALS_JSON:-./.claude-credentials.json}:/home/appuser/.claude.json

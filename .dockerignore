@@ -1,0 +1,7 @@
+.git
+.env
+storage
+.claude-credentials
+.claude-credentials.json
+.writetest2
+README.md

@@ -17,10 +17,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && npm install -g @anthropic-ai/claude-code \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --shell /bin/bash --uid 1000 appuser \
-    && mkdir -p /app/storage \
-    && chown -R appuser:appuser /app /home/appuser
+RUN useradd --create-home --shell /bin/bash --uid 1000 appuser
 
 WORKDIR /app
+
+COPY --chown=appuser:appuser . /app
+
+RUN mkdir -p /app/storage \
+    && chown -R appuser:appuser /app /home/appuser
 
 EXPOSE 8080
