@@ -81,9 +81,25 @@ Variáveis principais do `.env` (veja `.env.example` para a lista completa):
 | `TARGET_BRANCH` | Branch considerada elegível para review (ex: `main`) |
 | `ALLOW_DRAFTS` | Se `true`, PRs em draft também entram na fila |
 | `GH_TOKEN` | Token com leitura de código + escrita de comentário em PR nos repositórios alvo |
-| `ANTHROPIC_API_KEY` / `CLAUDE_CREDENTIALS_DIR` | Credencial da ferramenta de revisão automatizada (uma das duas) |
+| `ANTHROPIC_API_KEY` | Opcional. Se vazio, a ferramenta de revisão usa a sessão de login persistida no volume `claude_home` (ver abaixo) |
 
 O harness expõe `GET /health` para checagem de vida.
+
+### Autenticando com sessão de login (sem API key)
+
+A credencial da ferramenta de revisão fica num volume Docker nomeado
+(`claude_home`, montado em `/home/appuser` no worker) — não depende de
+nenhum caminho no host, então sobrevive a redeploys mesmo quando a pasta do
+projeto é reclonada. Pra autenticar pela primeira vez:
+
+```bash
+docker compose run --rm worker claude
+```
+
+Siga o fluxo de login mostrado no terminal (abre uma URL num navegador
+qualquer) e saia com `Ctrl+C` ou `/exit` depois de confirmar. A sessão fica
+persistida no volume e o worker normal (`docker compose up -d`) passa a
+usá-la automaticamente.
 
 ## Configurando um repositório alvo
 

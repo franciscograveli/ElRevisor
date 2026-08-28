@@ -20,9 +20,9 @@ services:
     env_file: .env
     volumes:
       - storage:/app/storage
-      - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}:/home/appuser/.claude
-      - ${CLAUDE_CREDENTIALS_JSON:-./.claude-credentials.json}:/home/appuser/.claude.json
+      - claude_home:/home/appuser
     restart: unless-stopped
 
 volumes:
   storage:
+  claude_home:
