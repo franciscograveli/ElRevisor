@@ -20,9 +20,7 @@ services:
     env_file: .env
     volumes:
       - storage:/app/storage
-      - claude_home:/home/appuser
     restart: unless-stopped
 
 volumes:
   storage:
-  claude_home:

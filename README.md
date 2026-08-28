@@ -81,25 +81,26 @@ Variáveis principais do `.env` (veja `.env.example` para a lista completa):
 | `TARGET_BRANCH` | Branch considerada elegível para review (ex: `main`) |
 | `ALLOW_DRAFTS` | Se `true`, PRs em draft também entram na fila |
 | `GH_TOKEN` | Token com leitura de código + escrita de comentário em PR nos repositórios alvo |
-| `ANTHROPIC_API_KEY` | Opcional. Se vazio, a ferramenta de revisão usa a sessão de login persistida no volume `claude_home` (ver abaixo) |
+| `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_API_KEY` | Credencial da ferramenta de revisão automatizada (uma das duas — ver abaixo) |
 
 O harness expõe `GET /health` para checagem de vida.
 
-### Autenticando com sessão de login (sem API key)
+### Autenticando via assinatura (sem API key)
 
-A credencial da ferramenta de revisão fica num volume Docker nomeado
-(`claude_home`, montado em `/home/appuser` no worker) — não depende de
-nenhum caminho no host, então sobrevive a redeploys mesmo quando a pasta do
-projeto é reclonada. Pra autenticar pela primeira vez:
+Em vez de `ANTHROPIC_API_KEY` (cobrada por uso de API), dá pra usar um token
+de longa duração (1 ano) gerado a partir da sua assinatura, sem custo
+adicional por review. É só uma variável de ambiente — não precisa de volume
+nem de nenhum caminho no host.
+
+Gere o token rodando (com a app já no ar):
 
 ```bash
-docker compose run --rm worker claude
+docker compose run --rm worker claude setup-token
 ```
 
 Siga o fluxo de login mostrado no terminal (abre uma URL num navegador
-qualquer) e saia com `Ctrl+C` ou `/exit` depois de confirmar. A sessão fica
-persistida no volume e o worker normal (`docker compose up -d`) passa a
-usá-la automaticamente.
+qualquer). Ao final ele imprime um token — cole-o em `CLAUDE_CODE_OAUTH_TOKEN`
+no `.env` (deixe `ANTHROPIC_API_KEY` vazio) e reinicie o worker.
 
 ## Configurando um repositório alvo
 
