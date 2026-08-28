@@ -19,7 +19,7 @@ services:
       - ./:/app
       - storage:/app/storage
       - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}:/home/appuser/.claude
-      - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}.json:/home/appuser/.claude.json
+      - ${CLAUDE_CREDENTIALS_JSON:-./.claude-credentials.json}:/home/appuser/.claude.json
     restart: unless-stopped
 
 volumes:
