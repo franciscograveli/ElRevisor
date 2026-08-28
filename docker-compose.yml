@@ -1,0 +1,26 @@
+services:
+  web:
+    build: ./docker
+    command: php -S 0.0.0.0:8080 -t public public/index.php
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - ./:/app
+      - storage:/app/storage
+    restart: unless-stopped
+
+  worker:
+    build: ./docker
+    command: php bin/worker.php
+    user: appuser
+    env_file: .env
+    volumes:
+      - ./:/app
+      - storage:/app/storage
+      - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}:/home/appuser/.claude
+      - ${CLAUDE_CREDENTIALS_DIR:-./.claude-credentials}.json:/home/appuser/.claude.json
+    restart: unless-stopped
+
+volumes:
+  storage:

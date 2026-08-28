@@ -1,0 +1,39 @@
+# Copie este arquivo para .github/workflows/review-pr.yml no repositório que
+# deve ser revisado, e configure os secrets HARNESS_URL e HARNESS_SECRET
+# (Settings > Secrets and variables > Actions).
+name: Request code review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+
+jobs:
+  notify-harness:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build payload
+        run: |
+          cat > payload.json <<EOF
+          {
+            "action": "${{ github.event.action }}",
+            "repo": "${{ github.repository }}",
+            "clone_url": "${{ github.event.repository.clone_url }}",
+            "pr_number": ${{ github.event.pull_request.number }},
+            "base_ref": "${{ github.event.pull_request.base.ref }}",
+            "head_sha": "${{ github.event.pull_request.head.sha }}",
+            "draft": ${{ github.event.pull_request.draft }}
+          }
+          EOF
+
+      - name: Sign and send
+        env:
+          HARNESS_SECRET: ${{ secrets.HARNESS_SECRET }}
+          HARNESS_URL: ${{ secrets.HARNESS_URL }}
+        run: |
+          SIGNATURE="sha256=$(openssl dgst -sha256 -hmac "$HARNESS_SECRET" -hex payload.json | sed 's/^.* //')"
+          curl -sf -X POST "$HARNESS_URL/webhook/review" \
+            -H "Content-Type: application/json" \
+            -H "X-Signature-256: $SIGNATURE" \
+            --data @payload.json
