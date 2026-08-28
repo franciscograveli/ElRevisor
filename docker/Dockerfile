@@ -22,3 +22,5 @@ RUN useradd --create-home --shell /bin/bash --uid 1000 appuser \
     && chown -R appuser:appuser /app /home/appuser
 
 WORKDIR /app
+
+EXPOSE 8080
