@@ -11,13 +11,16 @@ separadas de `gh pr comment`/`gh pr review`.
 
 ## Passo a passo
 
-1. Rode `gh pr view $1 --json state,isDraft,title,body,baseRefName,headRefOid,comments` e
+1. Rode `gh pr view $1 --json state,isDraft,title,body,baseRefName,headRefOid,comments,reviews,labels` e
    `gh pr diff $1` pra entender o PR. Se o PR estiver fechado, for trivial (ex: só
    formatação, só dependências, gerado automaticamente) ou claramente não precisar de
    revisão, pare aqui e não poste nada.
-2. Leia a conversa já existente no PR: comentários gerais
-   (`gh api repos/{owner}/{repo}/issues/$1/comments`) e comentários inline de reviews
-   anteriores (`gh api repos/{owner}/{repo}/pulls/$1/comments`). Um apontamento
+2. Leia a conversa já existente no PR — as TRÊS fontes, não só uma: comentários
+   gerais (`gh api repos/{owner}/{repo}/issues/$1/comments`), comentários inline de
+   reviews anteriores (`gh api repos/{owner}/{repo}/pulls/$1/comments`), e **o corpo
+   das reviews anteriores** (`gh api repos/{owner}/{repo}/pulls/$1/reviews` — o achado
+   mais importante de uma revisão automática costuma estar no campo `body` da review
+   em si, não como comentário inline separado; não pule essa chamada). Um apontamento
    anterior (de humano ou de revisão automática) só sai da sua lista se **um dos dois**
    for verdade:
    - o commit atual (`headRefOid`) já corrige o problema — confirme lendo o código
