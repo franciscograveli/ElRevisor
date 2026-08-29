@@ -23,7 +23,8 @@ WORKDIR /app
 
 COPY --chown=appuser:appuser . /app
 
-RUN mkdir -p /app/storage \
+RUN mkdir -p /app/storage /home/appuser/.claude/skills \
+    && cp -r /app/docker/claude-skills/code-review /home/appuser/.claude/skills/code-review \
     && chown -R appuser:appuser /app /home/appuser
 
 EXPOSE 8080

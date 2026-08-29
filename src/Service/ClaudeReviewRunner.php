@@ -10,7 +10,7 @@ final class ClaudeReviewRunner
 {
     public function run(string $workspaceDir, int $prNumber): string
     {
-        $prompt = sprintf('/code-review %d --comment', $prNumber);
+        $prompt = sprintf('/code-review %d', $prNumber);
 
         $process = proc_open(
             ['claude', '-p', $prompt, '--dangerously-skip-permissions'],
