@@ -28,6 +28,8 @@ final class RepoWorkspace
             $this->run(['git', 'fetch', 'origin'], $dir);
         }
 
+        $this->run(['git', 'checkout', '-B', $job['base_ref'], 'origin/' . $job['base_ref']], $dir);
+
         $this->run(['git', 'checkout', '--force', $job['head_sha']], $dir);
         $this->run(['git', 'reset', '--hard', $job['head_sha']], $dir);
 
