@@ -17,12 +17,21 @@ separadas de `gh pr comment`/`gh pr review`.
    revisão, pare aqui e não poste nada.
 2. Leia a conversa já existente no PR: comentários gerais
    (`gh api repos/{owner}/{repo}/issues/$1/comments`) e comentários inline de reviews
-   anteriores (`gh api repos/{owner}/{repo}/pulls/$1/comments`). Use isso pra:
-   - não repetir um apontamento que já foi feito por alguém (humano ou revisão
-     anterior) e que já foi corrigido ou explicitamente reconhecido/aceito na
-     conversa;
-   - entender decisões de design já discutidas, pra não sinalizar como problema algo
-     que já foi debatido e resolvido de propósito.
+   anteriores (`gh api repos/{owner}/{repo}/pulls/$1/comments`). Um apontamento
+   anterior (de humano ou de revisão automática) só sai da sua lista se **um dos dois**
+   for verdade:
+   - o commit atual (`headRefOid`) já corrige o problema — confirme lendo o código
+     atual, não assuma pelo fato de já ter passado tempo; ou
+   - alguém respondeu explicitamente aceitando/descartando aquilo na conversa (ex:
+     "fora de escopo", "é intencional", "não vamos corrigir agora").
+   **"Já foi apontado antes" não é motivo pra descartar.** Se um apontamento anterior
+   segue sem commit novo e sem resposta desde então, trate-o como um candidato de alta
+   prioridade: releia o código atual especificamente pra confirmar se ele ainda
+   procede, e se sim, ele PRECISA aparecer nos seus achados — não é duplicata, é um
+   bug real que continua sem solução. O objetivo de ler a conversa é evitar barulho
+   redundante sobre o que já foi resolvido, nunca suprimir um bug que ainda existe.
+   Aproveite também pra entender decisões de design já discutidas, pra não sinalizar
+   como problema algo que foi debatido e resolvido de propósito.
 3. Se o título ou corpo do PR referenciar uma task/issue (ex: "Closes #12", "Fixes
    #12", link de issue do GitHub, ou um ID de task tipo `ABC-123` mencionado no
    texto), busque essa referência (`gh issue view <n>` quando for issue do GitHub) e
@@ -55,8 +64,9 @@ separadas de `gh pr comment`/`gh pr review`.
    - Descarte sempre: o que lint/typecheck/CI pegam (imports, tipos, formatação),
      nitpicks de estilo, problemas em linhas que o PR não tocou, mudanças de
      comportamento claramente intencionais, questões silenciadas explicitamente no
-     código (ex: comentário de lint-ignore), e apontamentos já feitos e resolvidos
-     conforme o passo 2.
+     código (ex: comentário de lint-ignore), e apontamentos anteriores que o passo 2
+     confirmou como corrigidos ou explicitamente aceitos — nunca descarte um
+     apontamento anterior só por já ter sido mencionado antes.
 7. Se não sobrar nenhum achado com confiança >= 80 (ou >= 50 quando o PR for pequeno e
    os achados forem os únicos candidatos), a revisão é só de aprovação/observação,
    registrando que nada relevante foi encontrado — não deixe de postar nada.
