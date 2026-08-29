@@ -36,4 +36,4 @@ jobs:
           curl -sf -X POST "$HARNESS_URL/webhook/review" \
             -H "Content-Type: application/json" \
             -H "X-Signature-256: $SIGNATURE" \
-            --data @payload.json
+            --data-binary @payload.json
