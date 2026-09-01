@@ -55,7 +55,42 @@ separadas de `gh pr comment`/`gh pr review`.
      tocadas), se isso indicar que a mudança contraria uma decisão anterior
    - ausência de teste pra um comportamento novo/alterado que é claramente arriscado
      (não exija teste pra tudo, só onde a falta dele é o próprio risco)
-6. Para cada candidato a problema, avalie sua própria confiança de 0 a 100 antes de
+6. Auditoria de propagação — depois de entender o que o diff faz, verifique se a
+   mudança se propagou por todos os lugares que deveriam ser afetados. Não pule isso:
+   código correto isoladamente que não se propagou pro resto do sistema é a categoria
+   de bug que mais escapa de revisões superficiais — o diff sozinho nunca prova isso,
+   você precisa procurar fora dele.
+   - **Assinatura mudou?** Se o diff muda a assinatura de uma função/método já
+     existente (novo parâmetro, tipo diferente, comportamento novo condicionado a um
+     argumento), grepe TODO call-site dessa função no repo — não só o que aparece no
+     diff. Confirme que cada chamador foi atualizado. Um call-site esquecido
+     silenciosamente cai num default/fallback errado, e isso não aparece rodando só
+     o código novo.
+   - **Fórmula com categorias de saída?** Se o diff introduz um cálculo que alimenta
+     tiers/faixas/status (ex: score → baixo|neutro|bom|ótimo), calcule matematicamente
+     o valor mínimo e máximo que a fórmula pode produzir dados os pesos/parâmetros
+     usados, e confirme que CADA categoria declarada é de fato alcançável. Uma fórmula
+     que roda sem erro mas cujo teto nunca alcança a categoria mais alta é bug real,
+     mesmo que nenhum teste falhe — "roda sem erro" não é "matematicamente correta".
+   - **Critério de aceite de UI vindo de spec/issue?** Se o PR fecha uma issue/task
+     que descreve um cenário tipo "usuário vê X na tela Y", localize a tela REAL que
+     implementa esse cenário específico — não assuma que "o campo aparece em algum
+     componente" satisfaz o critério. Componente novo colocado só em telas
+     secundárias, faltando na tela que o critério de aceite descreve, é gap.
+   - **Padrão duplicado em outro arquivo?** Se o diff toca um componente, tipo de
+     card, ou lógica que já existe replicada em mais de um lugar (ex: duas telas
+     montando o mesmo tipo de objeto com funções próprias e nomes parecidos), grepe
+     por ocorrências do mesmo padrão no resto do repo antes de considerar a mudança
+     completa — se só um dos lugares foi atualizado, o outro é gap, não escopo
+     alheio.
+   - **Dado chega mas não é usado?** Campo novo aparece na resposta de uma API mas
+     nenhuma tela/painel que a consome renderiza nada com ele — isso é dado morto,
+     trate como gap de UI mesmo com o backend correto.
+   - **Suíte verde não é evidência suficiente.** Teste passando escrito pelo mesmo
+     autor do código prova que o código faz o que o autor pensou que devia fazer, não
+     que cobre os cenários do spec original — não use "os testes passam"/"a lógica
+     bate com os testes" como razão pra pular os pontos acima.
+7. Para cada candidato a problema, avalie sua própria confiança de 0 a 100 antes de
    incluir:
    - 0-24: possível falso positivo, questão pré-existente, ou nitpick que um revisor
      sênior não apontaria — descarte.
@@ -70,13 +105,13 @@ separadas de `gh pr comment`/`gh pr review`.
      código (ex: comentário de lint-ignore), e apontamentos anteriores que o passo 2
      confirmou como corrigidos ou explicitamente aceitos — nunca descarte um
      apontamento anterior só por já ter sido mencionado antes.
-7. Se não sobrar nenhum achado com confiança >= 80 (ou >= 50 quando o PR for pequeno e
+8. Se não sobrar nenhum achado com confiança >= 80 (ou >= 50 quando o PR for pequeno e
    os achados forem os únicos candidatos), a revisão é só de aprovação/observação,
    registrando que nada relevante foi encontrado — não deixe de postar nada.
-8. Decida o veredito: **"rejected"** se a revisão tem pelo menos um comentário de bug
+9. Decida o veredito: **"rejected"** se a revisão tem pelo menos um comentário de bug
    real/regressão/edge case não tratado/task não atendida (não conta nitpick de
    estilo nem sugestão opcional); **"approved"** caso contrário.
-9. Monte UMA revisão consolidada e submeta com uma única chamada `gh api`, method POST,
+10. Monte UMA revisão consolidada e submeta com uma única chamada `gh api`, method POST,
    endpoint `repos/{owner}/{repo}/pulls/$1/reviews`, body JSON contendo:
    - `commit_id`: o `headRefOid` do passo 1
    - `event`: `"COMMENT"`
@@ -90,7 +125,7 @@ separadas de `gh pr comment`/`gh pr review`.
    ou grave o JSON num arquivo temporário e use `gh api --input arquivo.json` — o
    importante é que seja **uma chamada só**, nunca um loop de `gh pr comment`/`gh pr
    review` por achado.
-10. Aplique a label do veredito: garanta que ela existe
+11. Aplique a label do veredito: garanta que ela existe
     (`gh label create approved --color 2ea44f --force` e
     `gh label create rejected --color d73a4a --force`, ambos idempotentes), remova a
     label oposta se estiver presente (`gh pr edit $1 --remove-label rejected` /
