@@ -14,7 +14,7 @@ final class ClaudeReviewRunner
             <<<'PROMPT'
             /code-review %1$d
 
-            Depois do code review acima, faça também uma checagem separada de completude — isso é tão importante quanto achar bugs, não pule.
+            Depois do code review acima, faça também uma checagem separada de completude — isso é tão importante quanto achar bugs, não pule. Em ambas as partes, leia o código ao redor das mudanças quando precisar de contexto — não se limite ao diff isolado; abrir os arquivos tocados pra entender call-sites, telas irmãs, ou o resto de uma fórmula é exigido, não opcional. Não invente achados: só reporte o que você confirmou lendo o código, sempre com arquivo e linha.
 
             ## 1. Completude da issue
 
@@ -24,7 +24,7 @@ final class ClaudeReviewRunner
             4. Histórias que dependem de outro trabalho ainda não mergeado não contam como gap desta PR, mas precisam ser citadas como tal, não omitidas silenciosamente.
             5. Se a issue já for uma fatia com escopo próprio de um trabalho maior (ex: uma sub-issue tipo "[Parte 1/N]" referenciando uma issue "épico" pai), valide contra o escopo da PRÓPRIA issue fechada — nunca contra o trabalho maior inteiro.
 
-            Termine com um veredito explícito, em negrito: **✅ COMPLETO** (cite qual trecho de código resolve cada história) ou **🟡 PARCIAL** (liste exatamente o que falta).
+            Termine com um veredito explícito, em negrito: **✅ COMPLETO** (cite qual trecho de código resolve cada história) ou **🟡 PARCIAL** (liste exatamente o que falta). Nunca gere um terceiro veredito ambíguo, e nunca arredonde pra COMPLETO por não ter certeza — se não conseguir confirmar alguma história com evidência real, isso é PARCIAL (ou pelo menos diga explicitamente o que não conseguiu confirmar em vez de assumir que está ok).
 
             ## 2. Ações — só se o veredito for PARCIAL, ou se o code review achou pelo menos um bug real
 
