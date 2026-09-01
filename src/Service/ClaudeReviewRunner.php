@@ -18,7 +18,7 @@ final class ClaudeReviewRunner
 
             ## 1. Completude da issue
 
-            1. Ache a issue que esta PR fecha (procure "Closes #N"/"Fecha #N" no corpo da PR #%1$d via `gh pr view %1$d --json body`; se não achar nenhuma referência, pule o resto desta seção e diga isso no relatório).
+            1. Ache a issue relacionada a esta PR — não procure só "Closes #N"/"Fecha #N". Muitas PRs deste repo são incremento parcial de um épico e citam a issue sem usar a palavra-chave de fechamento (ex: "Implementa parte do Épico N (issue nº 212)", "Related to #212", "Parte de #212", ou só um link `github.com/.../issues/212`). Rode `gh pr view %1$d --json body` e trate QUALQUER menção clara a uma issue como referência válida pra rodar esta seção, guardando se era linguagem de fechamento (Closes/Fecha) ou não — isso importa lá no passo de ações, não aqui. Só pule esta seção se não houver nenhuma referência a issue alguma, de nenhuma forma, no corpo da PR.
             2. Leia o corpo COMPLETO dessa issue (`gh issue view <N> --json body`) e liste todas as histórias de usuário/critérios de aceite reais que ela descreve — não resuma de memória.
             3. Para CADA história, verifique com evidência concreta no código (grep, não achismo) se ela foi implementada nesta PR. "A PR menciona isso na descrição" não é evidência — evidência é achar o código que faz a coisa acontecer.
             4. Histórias que dependem de outro trabalho ainda não mergeado não contam como gap desta PR, mas precisam ser citadas como tal, não omitidas silenciosamente.
